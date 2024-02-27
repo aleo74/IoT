@@ -1,0 +1,113 @@
+esphome:
+  name: esphome-web-c54614
+  friendly_name: ESP32-CAM
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+
+wifi:
+  fast_connect: on
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-C54614"
+    password: ""
+
+# Example configuration entry
+esp32_camera:
+  name: ESP32-CAM
+  external_clock:
+    pin: GPIO0
+    frequency: 20MHz
+  i2c_pins:
+    sda: GPIO26
+    scl: GPIO27
+  data_pins: [GPIO5, GPIO18, GPIO19, GPIO21, GPIO36, GPIO39, GPIO34, GPIO35]
+  vsync_pin: GPIO25
+  href_pin: GPIO23
+  pixel_clock_pin: GPIO22
+  power_down_pin: GPIO32
+
+  # Image settings
+  max_framerate: 10 fps    # default: 10 fps, max 60
+  idle_framerate: 0.2 fps # default: 0.1 fps - framerate for 'picture' in HA dashboard
+  resolution: 320x240
+  vertical_flip: True
+  contrast: 0 
+  brightness: 0 
+  saturation: 0 
+
+esp32_camera_web_server:
+  - port: 8080
+    mode: stream
+  - port: 8081
+    mode: snapshot
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+# Flashlight
+output:
+  - platform: gpio
+    pin: GPIO4
+    id: gpio_4
+
+## GPIO_4 is the flash light pin
+light:
+  - platform: binary
+    output: gpio_4
+    name: flashlight
+
+sensor:
+  - platform: wifi_signal
+    name: ESP32-CAM Wifi signal
+    update_interval: 10s
+  - platform: uptime
+    name: ESP32-CAM Uptime
+  - platform: aht10
+    temperature:
+      name: "Temperature_AH10"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      filters:
+        - offset: -2.2
+    humidity:
+      name: "Humidity_AH10"
+      accuracy_decimals: 1
+      unit_of_measurement: "%"
+      filters:
+        - offset: 7.58
+    i2c_id: bus_a
+    address: 0x38
+    update_interval: 10s
+
+text_sensor:
+  - platform: version
+    name: ESP32-CAM ESPHome Version
+  - platform: wifi_info
+    ssid:
+      name: ESP32-CAM WiFi
+
+switch:      
+  - platform: restart
+    name: ESP32-CAM restart
+
+i2c:
+  scl: GPIO3 
+  sda: GPIO1
+  id: bus_a

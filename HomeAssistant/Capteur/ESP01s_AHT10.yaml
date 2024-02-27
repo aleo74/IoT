@@ -1,0 +1,54 @@
+esphome:
+  name: esp01sAht10
+  friendly_name: esp01s Aht10
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "esp01sAht10"
+    password: ""
+
+captive_portal:
+
+i2c:
+  sda: 2
+  scl: 0
+  id: bus_a
+
+sensor:
+  - platform: aht10
+    temperature:
+      name: "Temperature"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      filters:
+        - offset: -2.2
+    humidity:
+      name: "Humidity"
+      accuracy_decimals: 1
+      unit_of_measurement: "%"
+      filters:
+        - offset: 7.58
+    i2c_id: bus_a
+    address: 0x38
+    update_interval: 10s
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
